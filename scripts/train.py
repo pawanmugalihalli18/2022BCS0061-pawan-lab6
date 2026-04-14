@@ -14,4 +14,6 @@ metrics = {
 with open("app/artifacts/metrics.json", "w") as f:
     json.dump(metrics, f)
 
+print(f"Name: Pawan")
+print(f"Roll No: 2022BCS0061")
 print(f"Training done. Accuracy: {accuracy}")

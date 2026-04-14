@@ -2,22 +2,23 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "2022bcs0064/surabhi_2022bcs0064"
+        DOCKER_IMAGE = "2022bcs0061_pawan/model"
+        DOCKERHUB_CREDENTIALS = "dockerhub-creds"
     }
 
     stages {
 
-        stage('Checkout') {
+        stage('Clone Repo') {
             steps {
-                git credentialsId: 'git-creds', url: 'https://github.com/ThisIsSurabhiSinha/Surabhi_2022BCS0064-Lab6.git'
+                git 'https://github.com/YOUR_USERNAME/YOUR_REPO.git'
             }
         }
 
-        stage('Setup Python') {
+        stage('Install Dependencies') {
             steps {
                 sh '''
-                python3 -m venv .venv
-                . .venv/bin/activate
+                python3 -m venv venv
+                . venv/bin/activate
                 pip install -r requirements.txt
                 '''
             }
@@ -26,63 +27,38 @@ pipeline {
         stage('Train Model') {
             steps {
                 sh '''
-                . .venv/bin/activate
-                python scripts/train.py
+                . venv/bin/activate
+                python train.py
                 '''
             }
         }
 
-        stage('Read Accuracy') {
+        stage('Print Info') {
             steps {
-                script {
-                    def acc = sh(script: "jq .accuracy app/artifacts/metrics.json", returnStdout: true).trim()
-                    env.CURRENT_ACCURACY = acc
-                    echo "Accuracy: ${acc}"
-                }
-            }
-        }
-
-        stage('Compare Accuracy') {
-            steps {
-                script {
-                    def best = credentials('best-accuracy')
-                    def isBetter = sh(
-                        script: "echo \"${env.CURRENT_ACCURACY} > ${best}\" | bc",
-                        returnStdout: true
-                    ).trim()
-                    env.IS_BETTER = isBetter
-                    echo "Is better: ${isBetter}"
-                }
+                echo "Name: Pawan"
+                echo "Roll No: 2022bcs0061"
             }
         }
 
         stage('Build Docker Image') {
-            when {
-                expression { env.IS_BETTER == '1' }
-            }
             steps {
-                sh "docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} ."
-                sh "docker tag ${IMAGE_NAME}:${BUILD_NUMBER} ${IMAGE_NAME}:latest"
+                sh 'docker build -t 2022bcs0061_pawan/model .'
             }
         }
 
-        stage('Push Docker Image') {
-            when {
-                expression { env.IS_BETTER == '1' }
-            }
+        stage('Push to DockerHub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-                    sh "echo $PASS | docker login -u $USER --password-stdin"
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'USERNAME',
+                    passwordVariable: 'PASSWORD'
+                )]) {
+                    sh '''
+                    echo $PASSWORD | docker login -u $USERNAME --password-stdin
+                    docker push 2022bcs0061_pawan/model
+                    '''
                 }
-                sh "docker push ${IMAGE_NAME}:${BUILD_NUMBER}"
-                sh "docker push ${IMAGE_NAME}:latest"
             }
-        }
-    }
-
-    post {
-        always {
-            archiveArtifacts artifacts: 'app/artifacts/**', fingerprint: true
         }
     }
 }
