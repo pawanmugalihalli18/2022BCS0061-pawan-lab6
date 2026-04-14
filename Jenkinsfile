@@ -8,11 +8,11 @@ pipeline {
 
     stages {
 
-        stage('Clone Repo') {
-            steps {
-                git 'https://github.com/YOUR_USERNAME/YOUR_REPO.git'
-            }
-        }
+        // stage('Clone Repo') {
+        //     steps {
+        //         git 'https://github.com/pawanmugalihalli18/2022BCS0061-pawan-lab6.git'
+        //     }
+        // }
 
         stage('Install Dependencies') {
             steps {
