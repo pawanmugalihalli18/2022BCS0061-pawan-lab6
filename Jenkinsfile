@@ -25,13 +25,13 @@ pipeline {
         }
 
         stage('Train Model') {
-            steps {
-                sh '''
-                . venv/bin/activate
-                python train.py
-                '''
-            }
-        }
+    steps {
+        sh '''
+        . venv/bin/activate
+        python scripts/train.py
+        '''
+    }
+}
 
         stage('Print Info') {
             steps {
