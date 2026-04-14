@@ -42,7 +42,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t 2022bcs0061_pawan/model .'
+                sh 'docker build -t 2022bcs0061pawan/2022bcs0061-pawan-lab5-model .'
             }
         }
 
@@ -55,7 +55,7 @@ pipeline {
                 )]) {
                     sh '''
                     echo $PASSWORD | docker login -u $USERNAME --password-stdin
-                    docker push 2022bcs0061_pawan/model
+                    docker push 2022bcs0061pawan/2022bcs0061-pawan-lab5-model
                     '''
                 }
             }
