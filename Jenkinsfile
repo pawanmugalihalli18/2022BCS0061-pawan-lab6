@@ -46,7 +46,10 @@ pipeline {
             steps {
                 script {
                     def best = credentials('best-accuracy')
-                    def isBetter = sh(script: "echo ${env.CURRENT_ACCURACY} ${best} | awk '{print ($1 > $2)}'", returnStdout: true).trim()
+                    def isBetter = sh(
+                        script: "echo ${env.CURRENT_ACCURACY} ${best} | awk '{print (\\$1 > \\$2)}'",
+                        returnStdout: true
+                    ).trim()
                     env.IS_BETTER = isBetter
                     echo "Is better: ${isBetter}"
                 }
