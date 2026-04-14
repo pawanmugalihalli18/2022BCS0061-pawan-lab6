@@ -47,7 +47,7 @@ pipeline {
                 script {
                     def best = credentials('best-accuracy')
                     def isBetter = sh(
-                        script: "echo ${env.CURRENT_ACCURACY} ${best} | awk '{print (\\$1 > \\$2)}'",
+                        script: "echo \"${env.CURRENT_ACCURACY} > ${best}\" | bc",
                         returnStdout: true
                     ).trim()
                     env.IS_BETTER = isBetter
